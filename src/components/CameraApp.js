@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Image, Modal, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image, Modal, Dimensions, PixelRatio } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import { captureRef } from 'react-native-view-shot';
 
 const CameraApp = () => {
 
@@ -41,11 +42,23 @@ const CameraApp = () => {
   }
   
   // Tirando uma foto
-  const takePhoto = async () => {
+  const takePhoto = async () => {  
+      setOpenModal(true);
+      let options = {
+        quality: 1,
+        base64: true,
+        exif: false
+      };
+  
+      let newPhoto = await cameraRef.current.takePictureAsync(options);
+      setPhoto(newPhoto);
   }
 
   // Salvando a foto
   const savePhoto = async () => {
+    MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
+      setPhoto(undefined);
+    });
   }
 
   return (
@@ -82,7 +95,7 @@ const CameraApp = () => {
               <Text style={styles.text}>My photo!</Text>
               <Image
                 style={{margin: 20, width: 320, height: 500}}
-                source={{uri:photo}}
+                source={{ uri: "data:image/jpg;base64," + photo.base64 }}
               />
               <TouchableOpacity
                 style={styles.touchButton}
@@ -91,7 +104,7 @@ const CameraApp = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.touchButton}
-                onPress={() => {}}>
+                onPress={() => setPhoto(undefined)} >
                 <Text>Voltar</Text>
               </TouchableOpacity>
             </View>
