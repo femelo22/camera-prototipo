@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "expo": "~46.0.16",
     "expo-camera": "~12.3.0",
     "expo-media-library": "~14.2.0",

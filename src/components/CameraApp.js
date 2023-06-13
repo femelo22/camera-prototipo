@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, TouchableOpacity, Image, Modal, Dimensions, Pix
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
+import axios from 'axios';
 
 const CameraApp = () => {
 
@@ -10,6 +11,7 @@ const CameraApp = () => {
   const [typeCamera, setTypeCamera] = useState(CameraType.back);
   const [hasPermission, setHasPermission] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [photoBase64, setPhotoBase64] = useState("");
   
   // Modal
   const cameraRef = useRef(null);
@@ -52,12 +54,24 @@ const CameraApp = () => {
   
       let newPhoto = await cameraRef.current.takePictureAsync(options);
       setPhoto(newPhoto);
+      setPhotoBase64(newPhoto.base64)
   }
 
   // Salvando a foto
   const savePhoto = async () => {
+    axios.post('http://localhost:8080/saveImage', {
+      request: photoBase64,
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
     MediaLibrary.saveToLibraryAsync(photo.uri).then(() => {
       setPhoto(undefined);
+      console.log(photoBase64)
     });
   }
 
